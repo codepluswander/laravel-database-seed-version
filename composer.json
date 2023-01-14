@@ -1,0 +1,41 @@
+{
+    "name": "codepluswander/laravel-database-seed-version",
+    "description": "Run database seeders with history tracking like migrations",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "codepluswander",
+            "email": "hey@codepluswander.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.0",
+        "orchestra/testbench": "^7.0|^8.0",
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Codepluswander\\LaravelDatabaseSeedVersion\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Codepluswander\\LaravelDatabaseSeedVersion\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Codepluswander\\LaravelDatabaseSeedVersion\\DatabaseSeedVersionServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
