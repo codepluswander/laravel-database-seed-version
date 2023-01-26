@@ -18,7 +18,23 @@ php artisan migrate
 
 ## Usage
 
-In your `AppServiceProvider` or any ServiceProvider `register` function, call the `addSeeder` function for the `DatabaseSeederVersion` class after resolving it.
+You can set seeder files in the config file
+
+```shell
+php artisan vendor:publish --provider="Codepluswander\LaravelDatabaseSeedVersion\DatabaseSeedVersionServiceProvider"
+```
+
+```php
+<?php
+
+return [
+    'seeders' => [
+        \MyNameSpace\MySeeder::class
+    ],
+];
+```
+
+You can also set seeders in your `AppServiceProvider` or any ServiceProvider `register` function. Just call the `addSeeder` function for the `DatabaseSeederVersion` class after resolving it.
 
 ```php
 <?php
