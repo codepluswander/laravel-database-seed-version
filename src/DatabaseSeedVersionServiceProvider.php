@@ -17,5 +17,13 @@ class DatabaseSeedVersionServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+
+        $this->publishes([
+            __DIR__.'/../config/laravel-database-seed-version.php' => config_path('laravel-database-seed-version.php'),
+        ], 'config');
+
+        $this->mergeConfigFrom(
+            __DIR__.'/../config/laravel-database-seed-version.php', 'laravel-database-seed-version'
+        );
     }
 }
