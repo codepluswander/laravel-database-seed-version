@@ -40,6 +40,6 @@ class DatabaseSeederVersion extends BaseSeeder
 
     public function getSeeders(): array
     {
-        return $this->seeders;
+        return array_merge(config('laravel-database-seed-version.seeders', []), $this->seeders);
     }
 }
