@@ -18,14 +18,8 @@ class DatabaseSeederVersion extends BaseSeeder
         foreach ($this->getSeeders() as $seeder) {
             if (! $existingSeeders->contains('seeder', $seeder)) {
                 $this->call($seeder);
-                $seedersToLog[] = ['seeder' => $seeder, 'batch' => $batch];
+                Seeder::create(['seeder' => $seeder, 'batch' => $batch]);
             }
-        }
-
-        if (! empty($seedersToLog)) {
-            Seeder::insert($seedersToLog);
-
-            return;
         }
 
         $this->command->info('Nothing to seed');
