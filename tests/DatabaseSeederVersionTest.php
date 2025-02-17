@@ -17,7 +17,7 @@ class DatabaseSeederVersionTest extends TestCase
 
         $this->artisan('db:seed');
 
-        $this->assertDatabaseCount('tests', 2);
+        $this->assertDatabaseCount('tests', 4);
 
         $this->app->afterResolving(DatabaseSeederVersion::class, function ($service) {
             $service->addSeeder([SecondTestSeeder::class]);
@@ -30,6 +30,6 @@ class DatabaseSeederVersionTest extends TestCase
             'batch' => 2,
         ]);
 
-        $this->assertDatabaseCount('tests', 4);
+        $this->assertDatabaseCount('tests', 6);
     }
 }

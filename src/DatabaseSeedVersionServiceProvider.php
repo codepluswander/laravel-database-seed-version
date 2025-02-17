@@ -3,6 +3,7 @@
 namespace Codepluswander\LaravelDatabaseSeedVersion;
 
 use Illuminate\Database\Console\Seeds\SeedCommand;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
 
 class DatabaseSeedVersionServiceProvider extends ServiceProvider
@@ -25,5 +26,32 @@ class DatabaseSeedVersionServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(
             __DIR__.'/../config/laravel-database-seed-version.php', 'laravel-database-seed-version'
         );
+
+        $this->registerSeedersFromDirectories(config('laravel-database-seed-version.seeder_directories', []));
+    }
+
+    protected function registerSeedersFromDirectories(array $directories)
+    {
+        foreach ($directories as $directory) {
+            $files = File::allFiles($directory);
+            foreach ($files as $file) {
+                $class = $this->getClassFromFile($file);
+                if ($class) {
+                    $this->app->afterResolving(DatabaseSeederVersion::class, function ($service) use ($class) {
+                        $service->addSeeder([$class]);
+                    });
+                }
+            }
+        }
+    }
+
+    protected function getClassFromFile($file)
+    {
+        $content = file_get_contents($file);
+        if (preg_match('/namespace\s+(.+?);/', $content, $namespaceMatches) &&
+            preg_match('/class\s+(\w+)/', $content, $classMatches)) {
+            return $namespaceMatches[1] . '\\' . $classMatches[1];
+        }
+        return null;
     }
 }

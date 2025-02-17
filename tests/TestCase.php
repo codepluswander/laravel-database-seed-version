@@ -31,6 +31,9 @@ class TestCase extends Orchestra
             'database' => ':memory:',
             'prefix' => '',
         ]);
+        $app['config']->set('laravel-database-seed-version.seeder_directories', [
+            __DIR__ . '/database/seeders',
+        ]);
     }
 
     /**
