@@ -4,7 +4,6 @@ namespace Codepluswander\LaravelDatabaseSeedVersion;
 
 use Codepluswander\LaravelDatabaseSeedVersion\Models\Seeder;
 use Illuminate\Database\Seeder as BaseSeeder;
-use Symfony\Component\Console\Input\InputOption;
 
 class DatabaseSeederVersion extends BaseSeeder
 {
@@ -39,14 +38,5 @@ class DatabaseSeederVersion extends BaseSeeder
     public function getSeeders(): array
     {
         return array_merge(config('laravel-database-seed-version.seeders', []), $this->seeders);
-    }
-
-    protected function getOptions(): array
-    {
-        return [
-            ['class', null, InputOption::VALUE_OPTIONAL, 'The class name of the root seeder', DatabaseSeederVersion::class],
-            ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to seed'],
-            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production'],
-        ];
     }
 }
