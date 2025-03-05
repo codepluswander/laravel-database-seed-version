@@ -13,16 +13,19 @@ class DatabaseSeederVersion extends BaseSeeder
     {
         $existingSeeders = Seeder::orderBy('id', 'DESC')->get();
         $batch = ($existingSeeders->first()->batch ?? 0) + 1;
-        $seedersToLog = [];
+        $noSeeders = true;
 
         foreach ($this->getSeeders() as $seeder) {
             if (! $existingSeeders->contains('seeder', $seeder)) {
                 $this->call($seeder);
                 Seeder::create(['seeder' => $seeder, 'batch' => $batch]);
+                $noSeeders = false;
             }
         }
 
-        $this->command->info('Nothing to seed');
+        if ($noSeeders) {
+            $this->command->info('Nothing to seed');
+        }
     }
 
     public function addSeeder(array $seeders): self

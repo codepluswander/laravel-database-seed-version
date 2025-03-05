@@ -3,17 +3,29 @@
 namespace Codepluswander\LaravelDatabaseSeedVersion;
 
 use Illuminate\Database\Console\Seeds\SeedCommand;
+use Illuminate\Database\Seeder;
 
 class SeedVersionCommand extends SeedCommand
 {
     /**
      * Get a seeder instance from the container.
      *
-     * @return \Illuminate\Database\Seeder
+     * @return Seeder
      */
-    protected function getSeeder()
+    protected function getSeeder(): Seeder
     {
-        return $this->laravel->make(DatabaseSeederVersion::class)
+        $class = $this->input->getArgument('class') ?? $this->input->getOption('class');
+
+        if (! str_contains($class, '\\')) {
+            $class = 'Database\\Seeders\\'.$class;
+        }
+
+        if ($class === 'Database\\Seeders\\DatabaseSeeder' &&
+            ! class_exists($class)) {
+            $class = DatabaseSeederVersion::class;
+        }
+
+        return $this->laravel->make($class)
             ->setContainer($this->laravel)
             ->setCommand($this);
     }
