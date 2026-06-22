@@ -3,11 +3,19 @@
 namespace Codepluswander\LaravelDatabaseSeedVersion;
 
 use Illuminate\Database\Console\Seeds\SeedCommand;
+use Illuminate\Database\ConnectionResolverInterface as Resolver;
 use Illuminate\Database\Seeder;
 use Symfony\Component\Console\Input\InputOption;
 
 class SeedVersionCommand extends SeedCommand
 {
+    public function __construct(
+        Resolver $resolver,
+        protected SeederClassResolver $classResolver
+    ) {
+        parent::__construct($resolver);
+    }
+
     /**
      * Get a seeder instance from the container.
      *
@@ -15,16 +23,9 @@ class SeedVersionCommand extends SeedCommand
      */
     protected function getSeeder(): Seeder
     {
-        $class = $this->input->getArgument('class') ?? $this->input->getOption('class');
-
-        if (! str_contains($class, '\\')) {
-            $class = 'Database\\Seeders\\'.$class;
-        }
-
-        if ($class === 'Database\\Seeders\\DatabaseSeeder' &&
-            ! class_exists($class)) {
-            $class = DatabaseSeederVersion::class;
-        }
+        $class = $this->classResolver->resolve(
+            $this->input->getArgument('class') ?? $this->input->getOption('class')
+        );
 
         return $this->laravel->make($class)
             ->setContainer($this->laravel)

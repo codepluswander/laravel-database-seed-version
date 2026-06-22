@@ -3,7 +3,6 @@
 namespace Codepluswander\LaravelDatabaseSeedVersion;
 
 use Illuminate\Database\Console\Seeds\SeedCommand;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
 
 class DatabaseSeedVersionServiceProvider extends ServiceProvider
@@ -13,6 +12,10 @@ class DatabaseSeedVersionServiceProvider extends ServiceProvider
         $this->app->extend(SeedCommand::class, function ($service, $app) {
             return $app->make(SeedVersionCommand::class);
         });
+
+        $this->app->singleton(SeederClassResolver::class);
+        $this->app->singleton(SeederDiscovery::class);
+        $this->app->singleton(SeedRun::class);
     }
 
     public function boot(): void
@@ -32,26 +35,10 @@ class DatabaseSeedVersionServiceProvider extends ServiceProvider
 
     protected function registerSeedersFromDirectories(array $directories): void
     {
-        foreach ($directories as $directory) {
-            $files = File::allFiles($directory);
-            foreach ($files as $file) {
-                $class = $this->getClassFromFile($file);
-                if ($class) {
-                    $this->app->afterResolving(DatabaseSeederVersion::class, function ($service) use ($class) {
-                        $service->addSeeder([$class]);
-                    });
-                }
-            }
+        foreach ($this->app->make(SeederDiscovery::class)->discover($directories) as $class) {
+            $this->app->afterResolving(DatabaseSeederVersion::class, function ($service) use ($class) {
+                $service->addSeeder([$class]);
+            });
         }
-    }
-
-    protected function getClassFromFile($file): ?string
-    {
-        $content = file_get_contents($file);
-        if (preg_match('/namespace\s+(.+?);/', $content, $namespaceMatches) &&
-            preg_match('/class\s+(\w+)/', $content, $classMatches)) {
-            return $namespaceMatches[1] . '\\' . $classMatches[1];
-        }
-        return null;
     }
 }

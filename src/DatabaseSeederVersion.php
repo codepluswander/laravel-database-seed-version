@@ -2,28 +2,26 @@
 
 namespace Codepluswander\LaravelDatabaseSeedVersion;
 
-use Codepluswander\LaravelDatabaseSeedVersion\Models\Seeder;
 use Illuminate\Database\Seeder as BaseSeeder;
 
 class DatabaseSeederVersion extends BaseSeeder
 {
     protected array $seeders = [];
 
+    public function __construct(
+        protected ?SeedRun $seedRun = null
+    ) {}
+
     public function run(): void
     {
-        $existingSeeders = Seeder::orderBy('id', 'DESC')->get();
-        $batch = ($existingSeeders->first()->batch ?? 0) + 1;
-        $noSeeders = true;
-
-        foreach ($this->getSeeders() as $seeder) {
-            if (! $existingSeeders->contains('seeder', $seeder)) {
+        $ranSeeders = $this->seedRun()->run(
+            $this->getSeeders(),
+            function (string $seeder): void {
                 $this->call($seeder);
-                Seeder::create(['seeder' => $seeder, 'batch' => $batch]);
-                $noSeeders = false;
             }
-        }
+        );
 
-        if ($noSeeders) {
+        if (! $ranSeeders) {
             $this->command->info('Nothing to seed');
         }
     }
@@ -37,6 +35,14 @@ class DatabaseSeederVersion extends BaseSeeder
 
     public function getSeeders(): array
     {
-        return array_merge(config('laravel-database-seed-version.seeders', []), $this->seeders);
+        return array_values(array_unique(array_merge(
+            config('laravel-database-seed-version.seeders', []),
+            $this->seeders,
+        )));
+    }
+
+    protected function seedRun(): SeedRun
+    {
+        return $this->seedRun ??= app(SeedRun::class);
     }
 }

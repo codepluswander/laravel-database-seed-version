@@ -2,4 +2,5 @@
 
 return [
     'seeders' => [],
+    'seeder_directories' => [],
 ];
